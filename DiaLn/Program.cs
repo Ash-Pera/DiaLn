@@ -21,7 +21,7 @@ public class Lexeme {
     }
 
     override public string ToString() {
-        return this.type + " " + this.data;
+        return this.type + ": " + this.data;
     }
 }
 
@@ -79,10 +79,10 @@ public class Interpreter {
 
 
     
-    static string whit = "[\r\n\t\f\v ]";
+    static string whit = "[\r\n\t\f\v ]*";
                                    //  start of line, an amount of white space, ", some stuff, "
                                    //  ^[\r\n\t\f\v ]*^".*"
-    static Regex strRegex = new Regex("^" + whit + "*\".*\"", RegexOptions.Compiled);
+    static Regex strRegex = new Regex("^" + whit + "\".*\"", RegexOptions.Compiled);
     static Regex opsRegex = new Regex("^" + whit + "(\\+(\\?!(=|\\+))|\\+\\+|-|\\*|/|==|\\+=|>=|<=|>(?!=)|<(?!=)|=(?!=))", RegexOptions.Compiled);
 
     static Regex controlLine = new Regex("^" + whit + "\\*", RegexOptions.Compiled);
@@ -106,8 +106,12 @@ public class Interpreter {
 
     public List<Lexeme> tokenizeDialogLine(string line) {
         List<Lexeme> lexemes = new List<Lexeme>();
-        lexemes.Add(new Lexeme(Lexeme.Type.dialogName, dialogName.Match(line).Value));
-        lexemes.Add(new Lexeme(Lexeme.Type.dialogText, dialogText.Match(line).Value)); // still need to remove colon
+
+        string speaker = dialogName.Match(line).Value;
+        lexemes.Add(new Lexeme(Lexeme.Type.dialogName, speaker));
+
+        //rest of line should be dialog text
+        lexemes.Add(new Lexeme(Lexeme.Type.dialogText, line.Substring(speaker.Length + 1).TrimStart()));
         return lexemes;
     }
 
@@ -137,7 +141,10 @@ namespace DiaLn {
     class Program {
         static void Main(string[] args) {
             Interpreter interp = new Interpreter();
-            Console.WriteLine(interp.tokenizeLine(" \"hello\""));
+
+            var list = interp.tokenizeLine("Ash: Hello, world");
+            list.ForEach(Console.WriteLine);
+
             Console.WriteLine("Press any key to exit.");
             Console.ReadKey();
         }
