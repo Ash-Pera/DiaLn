@@ -79,8 +79,8 @@ public class Interpreter {
     }
 
     // const imples static
-    const string plus = "\\+(?![+|=])";
-    const string minus = "-(?![-])";
+    const string plus = "\\+(?![+=]))";
+    const string minus = "-(?!(-|=))";
     const string div = "/";
     const string times = "\\*";
     const string plusplus = "\\+\\+";
@@ -110,21 +110,24 @@ public class Interpreter {
     const string whit = "[\r\n\t\f\v ]*";
                                    //  start of line, an amount of white space, ", some stuff, "
                                    //  ^[\r\n\t\f\v ]*^".*"
-    static Regex strRegex = new Regex("^" + whit + "\".*\"", RegexOptions.Compiled);
-    static Regex opsRegex = new Regex("^" + whit + "(" + String.Join("|", opstrings) + ")", RegexOptions.Compiled);
+    static readonly Regex strRegex = new Regex("^" + whit + "\".*\"", RegexOptions.Compiled);
+    static readonly Regex opsRegex = new Regex("^" + whit + "(" + String.Join("|", opstrings) + ")", RegexOptions.Compiled);
+    static readonly Regex paranRegex = new Regex("^" + whit + "(\\(|\\)|\\[|\\]|\\{|\\})", RegexOptions.Compiled);
+    static readonly Regex controlRegex = new Regex("^" + whit + "(IF|GOTO)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    static readonly Regex varibleRegex = new Regex("^" + whit + "(INT|FLOAT|BOOL)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-    static Regex paranRegex = new Regex("^" + whit + "(\\(|\\)|\\[|\\]|\\{|\\})", RegexOptions.Compiled);
 
+    static readonly Regex controlLine = new Regex("^" + whit + "\\*", RegexOptions.Compiled);
 
-    static Regex controlLine = new Regex("^" + whit + "\\*", RegexOptions.Compiled);
-
-    static Regex dialogName = new Regex("^" + whit + ".*?(?=:)", RegexOptions.Compiled);
-    static Regex dialogText = new Regex("^" + whit + ":" + ".*$", RegexOptions.Compiled);
+    static readonly Regex dialogName = new Regex("^" + whit + ".*?(?=:)", RegexOptions.Compiled);
+    static readonly Regex dialogText = new Regex("^" + whit + ":" + ".*$", RegexOptions.Compiled);
 
     static Dictionary<Regex, Lexeme.Type> controlDefs = new Dictionary<Regex, Lexeme.Type>()
                 { { strRegex, Lexeme.Type.literal},
                   { opsRegex, Lexeme.Type.op},
-                  {paranRegex, Lexeme.Type.separator } };
+                  { paranRegex, Lexeme.Type.separator },
+                  { controlRegex, Lexeme.Type.keyword },
+                  { varibleRegex, Lexeme.Type.keyword } };
 
 
    public Lexeme nextControlLexeme(string line) {
