@@ -80,10 +80,11 @@ public class Interpreter {
 
     // const imples static
     const string plus = "\\+(?![+|=])";
-    const string minus = "-";
+    const string minus = "-(?![-])";
     const string div = "/";
     const string times = "\\*";
     const string plusplus = "\\+\\+";
+    const string minusminus = "--";
 
     const string eq = "=(?!=)";
     const string pluseq = "\\+=";
@@ -99,9 +100,9 @@ public class Interpreter {
 
     const string inv = "\\!";
 
-    static readonly string[] opstrings = { plus, minus , div, times, plusplus,
-                                          eq, pluseq, minuseq, timeseq, diveq,
-                                          eqeq, gtreq, lesseq, less, gtr, inv};
+    static readonly string[] opstrings = { plus, minus , div, times, plusplus, minusminus,
+                                           eq, pluseq, minuseq, timeseq, diveq,
+                                           eqeq, gtreq, lesseq, less, gtr, inv};
 
 
 
