@@ -112,6 +112,9 @@ public class Interpreter {
     static Regex strRegex = new Regex("^" + whit + "\".*\"", RegexOptions.Compiled);
     static Regex opsRegex = new Regex("^" + whit + "(" + String.Join("|", opstrings) + ")", RegexOptions.Compiled);
 
+    static Regex paranRegex = new Regex("^" + whit + "(\\(|\\)|\\[|\\]|\\{|\\})", RegexOptions.Compiled);
+
+
     static Regex controlLine = new Regex("^" + whit + "\\*", RegexOptions.Compiled);
 
     static Regex dialogName = new Regex("^" + whit + ".*?(?=:)", RegexOptions.Compiled);
@@ -119,7 +122,8 @@ public class Interpreter {
 
     static Dictionary<Regex, Lexeme.Type> controlDefs = new Dictionary<Regex, Lexeme.Type>()
                 { { strRegex, Lexeme.Type.literal},
-                  { opsRegex, Lexeme.Type.op} };
+                  { opsRegex, Lexeme.Type.op},
+                  {paranRegex, Lexeme.Type.separator } };
 
 
    public Lexeme nextControlLexeme(string line) {
@@ -154,7 +158,6 @@ public class Interpreter {
              line = line.Substring(lexemes.Last().data.Length);
          }
 
-        //lexemes.Add(new Lexeme(Lexeme.Type.literal, "CONTROL LINEsss" + line)); 
         return lexemes;
 
     }
@@ -190,7 +193,7 @@ namespace DiaLn {
 
             var testText = new List<string> { "Ash: Hello, world ",
                                               "Computer: Hello Ash! ily :)",
-                                              "*+++++"};
+                                              "*++(+)++"};
 
 
 
