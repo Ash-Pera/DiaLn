@@ -87,7 +87,7 @@ public class Interpreter {
 
     static Regex controlLine = new Regex("^" + whit + "\\*", RegexOptions.Compiled);
 
-    static Regex dialogName = new Regex("^" + whit + ".*(?=:)", RegexOptions.Compiled);
+    static Regex dialogName = new Regex("^" + whit + ".*?(?=:)", RegexOptions.Compiled);
     static Regex dialogText = new Regex("^" + whit + ":" + ".*$", RegexOptions.Compiled);
 
     static Dictionary<Regex, Lexeme.Type> controlDefs = new Dictionary<Regex, Lexeme.Type>()
@@ -115,8 +115,7 @@ public class Interpreter {
         return lexemes;
     }
 
-
-
+    
     public List<Lexeme> tokenizeLine(string line) {
         List<Lexeme> lexemes = new List<Lexeme>();
         if (controlLine.IsMatch(line)) { // if is a control line
@@ -134,6 +133,15 @@ public class Interpreter {
 
         return lexemes;
     }
+
+
+    public List<Lexeme> tokenize(List<string> lines) {
+        List<Lexeme> lexemes = new List<Lexeme>();
+        foreach(string line in lines) {
+            lexemes.AddRange(tokenizeLine(line));
+        }
+        return lexemes;
+    }
 }
 
 
@@ -142,8 +150,15 @@ namespace DiaLn {
         static void Main(string[] args) {
             Interpreter interp = new Interpreter();
 
-            var list = interp.tokenizeLine("Ash: Hello, world");
-            list.ForEach(Console.WriteLine);
+            var testText = new List<string> { "Ash: Hello, world ",
+                                              "Computer: Hello Ash! ily :)" };
+
+
+
+
+
+            var lexed = interp.tokenize(testText);
+            lexed.ForEach(Console.WriteLine);
 
             Console.WriteLine("Press any key to exit.");
             Console.ReadKey();
