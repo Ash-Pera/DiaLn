@@ -78,25 +78,26 @@ public class Interpreter {
         return (uint)str.Substring(0, offset).Count(ch => ch == '\t');
     }
 
-    static readonly string plus = "\\+(?![+|=])";
-    static readonly string minus = "-";
-    static readonly string div = "/";
-    static readonly string times = "\\*";
-    static readonly string plusplus = "\\+\\+";
+    // const imples static
+    const string plus = "\\+(?![+|=])";
+    const string minus = "-";
+    const string div = "/";
+    const string times = "\\*";
+    const string plusplus = "\\+\\+";
 
-    static readonly string eq = "=(?!=)";
-    static readonly string pluseq = "\\+=";
-    static readonly string minuseq = "-=";
-    static readonly string timeseq = "\\*=";
-    static readonly string diveq = "/=";
+    const string eq = "=(?!=)";
+    const string pluseq = "\\+=";
+    const string minuseq = "-=";
+    const string timeseq = "\\*=";
+    const string diveq = "/=";
 
-    static readonly string eqeq = "==";
-    static readonly string gtreq = ">=";
-    static readonly string lesseq = "<=";
-    static readonly string gtr = ">(?!=)";
-    static readonly string less = "<(?!=)";
+    const string eqeq = "==";
+    const string gtreq = ">=";
+    const string lesseq = "<=";
+    const string gtr = ">(?!=)";
+    const string less = "<(?!=)";
 
-    static readonly string inv = "\\!";
+    const string inv = "\\!";
 
     static readonly string[] opstrings = { plus, minus , div, times, plusplus,
                                           eq, pluseq, minuseq, timeseq, diveq,
@@ -105,7 +106,7 @@ public class Interpreter {
 
 
 
-    static readonly string whit = "[\r\n\t\f\v ]*";
+    const string whit = "[\r\n\t\f\v ]*";
                                    //  start of line, an amount of white space, ", some stuff, "
                                    //  ^[\r\n\t\f\v ]*^".*"
     static Regex strRegex = new Regex("^" + whit + "\".*\"", RegexOptions.Compiled);
