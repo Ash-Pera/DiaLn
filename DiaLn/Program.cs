@@ -12,7 +12,8 @@ using System.Text.RegularExpressions;
 
 public class Lexeme {
     public enum Type { identifier, keyword, separator, op, literal, comment,
-                        dialogName, dialogText};
+                        dialogName, dialogText,
+                        UNKNOWN};
     public Type type;
     public string data;
     public Lexeme(Type type, string data) {
@@ -77,13 +78,38 @@ public class Interpreter {
         return (uint)str.Substring(0, offset).Count(ch => ch == '\t');
     }
 
+    static readonly string plus = "\\+(?![+|=])";
+    static readonly string minus = "-";
+    static readonly string div = "/";
+    static readonly string times = "\\*";
+    static readonly string plusplus = "\\+\\+";
 
-    
-    static string whit = "[\r\n\t\f\v ]*";
+    static readonly string eq = "=(?!=)";
+    static readonly string pluseq = "\\+=";
+    static readonly string minuseq = "-=";
+    static readonly string timeseq = "\\*=";
+    static readonly string diveq = "/=";
+
+    static readonly string eqeq = "==";
+    static readonly string gtreq = ">=";
+    static readonly string lesseq = "<=";
+    static readonly string gtr = ">(?!=)";
+    static readonly string less = "<(?!=)";
+
+    static readonly string inv = "\\!";
+
+    static readonly string[] opstrings = { plus, minus , div, times, plusplus,
+                                          eq, pluseq, minuseq, timeseq, diveq,
+                                          eqeq, gtreq, lesseq, less, gtr, inv};
+
+
+
+
+    static readonly string whit = "[\r\n\t\f\v ]*";
                                    //  start of line, an amount of white space, ", some stuff, "
                                    //  ^[\r\n\t\f\v ]*^".*"
     static Regex strRegex = new Regex("^" + whit + "\".*\"", RegexOptions.Compiled);
-    static Regex opsRegex = new Regex("^" + whit + "(\\+(\\?!(=|\\+))|\\+\\+|-|\\*|/|==|\\+=|>=|<=|>(?!=)|<(?!=)|=(?!=))", RegexOptions.Compiled);
+    static Regex opsRegex = new Regex("^" + whit + "(" + String.Join("|", opstrings) + ")", RegexOptions.Compiled);
 
     static Regex controlLine = new Regex("^" + whit + "\\*", RegexOptions.Compiled);
 
@@ -101,7 +127,7 @@ public class Interpreter {
                 return new Lexeme(controlDefs[langPattern], langPattern.Match(line).Value);
             }
         }
-        return null;
+        return new Lexeme(Lexeme.Type.UNKNOWN, line);
     }
 
     public List<Lexeme> tokenizeDialogLine(string line) {
@@ -115,19 +141,30 @@ public class Interpreter {
         return lexemes;
     }
 
+    public List<Lexeme> tokenizeControlLine(string line) {
+        List<Lexeme> lexemes = new List<Lexeme>();
+        string controlIndicator = controlLine.Match(line).Value;
+
+        line = line.Substring(controlIndicator.Length);
+
+         while (line != "") {
+             Lexeme next = nextControlLexeme(line);
+             lexemes.Add(next);
+             line = line.Substring(lexemes.Last().data.Length);
+         }
+
+        //lexemes.Add(new Lexeme(Lexeme.Type.literal, "CONTROL LINEsss" + line)); 
+        return lexemes;
+
+    }
+
     
     public List<Lexeme> tokenizeLine(string line) {
         List<Lexeme> lexemes = new List<Lexeme>();
         if (controlLine.IsMatch(line)) { // if is a control line
-            while (line != "") {
-                Lexeme next = nextControlLexeme(line);
-                lexemes.Add(next);
-                line = line.Substring(lexemes[lexemes.Count() - 1].data.Length);
-            }
+            lexemes.AddRange(tokenizeControlLine(line));
         } else { // is a dialog line
             lexemes.AddRange(tokenizeDialogLine(line));
-            line = line.Substring(lexemes[lexemes.Count() - 1].data.Length +
-                                    lexemes[lexemes.Count() - 2].data.Length);
         }
         
 
@@ -151,7 +188,8 @@ namespace DiaLn {
             Interpreter interp = new Interpreter();
 
             var testText = new List<string> { "Ash: Hello, world ",
-                                              "Computer: Hello Ash! ily :)" };
+                                              "Computer: Hello Ash! ily :)",
+                                              "*+++++"};
 
 
 
