@@ -79,7 +79,7 @@ public class Interpreter {
     }
 
     // const imples static
-    const string plus = "\\+(?![+=]))";
+    const string plus = "\\+(?![+=])";
     const string minus = "-(?!(-|=))";
     const string div = "/";
     const string times = "\\*";
@@ -108,14 +108,16 @@ public class Interpreter {
 
 
     const string whit = "[\r\n\t\f\v ]*";
+
+
                                    //  start of line, an amount of white space, ", some stuff, "
                                    //  ^[\r\n\t\f\v ]*^".*"
-    static readonly Regex strRegex = new Regex("^" + whit + "\".*\"", RegexOptions.Compiled);
+    static readonly Regex strRegex = new Regex("^" + whit + "\".*?\"", RegexOptions.Compiled);
     static readonly Regex opsRegex = new Regex("^" + whit + "(" + String.Join("|", opstrings) + ")", RegexOptions.Compiled);
     static readonly Regex paranRegex = new Regex("^" + whit + "(\\(|\\)|\\[|\\]|\\{|\\})", RegexOptions.Compiled);
     static readonly Regex controlRegex = new Regex("^" + whit + "(IF|GOTO)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
     static readonly Regex varibleRegex = new Regex("^" + whit + "(INT|FLOAT|BOOL)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
+    static readonly Regex identifierRegex = new Regex("^" + whit + "[a-zA-Z_][a-zA-Z0-9_]*\\b", RegexOptions.Compiled);
 
     static readonly Regex controlLine = new Regex("^" + whit + "\\*", RegexOptions.Compiled);
 
@@ -124,10 +126,11 @@ public class Interpreter {
 
     static Dictionary<Regex, Lexeme.Type> controlDefs = new Dictionary<Regex, Lexeme.Type>()
                 { { strRegex, Lexeme.Type.literal},
-                  { opsRegex, Lexeme.Type.op},
                   { paranRegex, Lexeme.Type.separator },
+                  { opsRegex, Lexeme.Type.op},
                   { controlRegex, Lexeme.Type.keyword },
-                  { varibleRegex, Lexeme.Type.keyword } };
+                  { varibleRegex, Lexeme.Type.keyword },
+                  { identifierRegex, Lexeme.Type.identifier} };
 
 
    public Lexeme nextControlLexeme(string line) {
@@ -197,7 +200,8 @@ namespace DiaLn {
 
             var testText = new List<string> { "Ash: Hello, world ",
                                               "Computer: Hello Ash! ily :)",
-                                              "*++(+)++"};
+                                              "*++(+)++",
+                                              "*    static readonly Regex dialogName = new Regex(\"^\" + whit + \".*?(?=:)\", RegexOptionsCompiled);" };
 
 
 
