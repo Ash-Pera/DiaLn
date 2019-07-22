@@ -109,7 +109,6 @@ public class Interpreter {
 
     const string whit = "[\r\n\t\f\v ]*";
 
-
                                    //  start of line, an amount of white space, ", some stuff, "
                                    //  ^[\r\n\t\f\v ]*^".*"
     static readonly Regex strRegex = new Regex("^" + whit + "\".*?\"", RegexOptions.Compiled);
@@ -157,12 +156,12 @@ public class Interpreter {
         List<Lexeme> lexemes = new List<Lexeme>();
         string controlIndicator = controlLine.Match(line).Value;
 
-        line = line.Substring(controlIndicator.Length);
+        line = line.Substring(controlIndicator.Length).TrimStart();
 
          while (line != "") {
              Lexeme next = nextControlLexeme(line);
              lexemes.Add(next);
-             line = line.Substring(lexemes.Last().data.Length);
+             line = line.Substring(lexemes.Last().data.Length).TrimStart();
          }
 
         return lexemes;
